@@ -1,0 +1,541 @@
+{% extends "base.html" %}
+
+{% block title %}AquaTrace - Aquaculture Monitoring & Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<style>
+    /* Main Page Specific Styles */
+    .main-hero {
+        background: linear-gradient(135deg, #1e88e5 0%, #00bcd4 100%);
+        color: white;
+        padding: 4rem 2rem;
+        text-align: center;
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-content h1 {
+        font-size: 3.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero-content p {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        max-width: 700px;
+        opacity: 0.95;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-hero.primary {
+        background: white;
+        color: #1e88e5;
+    }
+
+    .btn-hero.primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .btn-hero.secondary {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-hero.secondary:hover {
+        background: white;
+        color: #1e88e5;
+    }
+
+    .features-section {
+        padding: 4rem 2rem;
+        background: #f5f5f5;
+    }
+
+    .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 3rem;
+        font-weight: bold;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        color: #1e88e5;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .reviews-section {
+        padding: 4rem 2rem;
+        background: white;
+    }
+
+    .reviews-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .reviews-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .review-card {
+        background: #f9f9f9;
+        padding: 2rem;
+        border-radius: 10px;
+        border-left: 4px solid #1e88e5;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    .review-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .reviewer-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #1e88e5;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+
+    .reviewer-info h4 {
+        color: #333;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .reviewer-info p {
+        color: #999;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .stars {
+        color: #ffc107;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .review-text {
+        color: #555;
+        line-height: 1.6;
+        font-style: italic;
+    }
+
+    .stats-section {
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #1e88e5 0%, #00bcd4 100%);
+        color: white;
+    }
+
+    .stats-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .stat-box h3 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-box p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .cta-section {
+        padding: 4rem 2rem;
+        background: #f5f5f5;
+        text-align: center;
+    }
+
+    .cta-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .cta-section h2 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .btn-cta {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        background: #1e88e5;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-cta:hover {
+        background: #1565c0;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(30, 136, 229, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2rem;
+        }
+
+        .hero-content p {
+            font-size: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .stat-box h3 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="main-hero">
+    <div class="hero-content">
+        <h1><i class="fas fa-water"></i> AquaTrace</h1>
+        <p>Real-time aquaculture monitoring and management system for optimal fish farm productivity</p>
+        <div class="hero-buttons">
+            <a href="/login" class="btn-hero primary">Sign In</a>
+            <a href="/signup" class="btn-hero secondary">Create Account</a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <div class="features-container">
+        <h2 class="section-title">Why Choose AquaTrace?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Real-Time Monitoring</h3>
+                <p>Monitor water quality parameters 24/7 with live updates. Track temperature, oxygen levels, pH, ammonia, and turbidity in real-time.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3>Smart Alerts</h3>
+                <p>Receive instant SMS notifications when water parameters go out of range. Never miss a critical alert for your fish farm.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>AI Predictions</h3>
+                <p>Get monthly growth forecasts and health predictions using advanced machine learning algorithms specific to your fish species.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Multi-Farm Support</h3>
+                <p>Manage multiple ponds or farms from a single dashboard. Set custom thresholds for each farm's unique requirements.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-fish"></i>
+                </div>
+                <h3>Species Optimization</h3>
+                <p>Optimized settings for Tilapia, Catfish, Trout, Carp and more. Get recommendations tailored to your fish type.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3>Data Export</h3>
+                <p>Export all sensor data as CSV files for analysis, record keeping, and compliance documentation.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="stats-container">
+        <h2 class="section-title" style="color: white;">Our Impact</h2>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3>500+</h3>
+                <p>Active Farms</p>
+            </div>
+            <div class="stat-box">
+                <h3>2M+</h3>
+                <p>Data Points</p>
+            </div>
+            <div class="stat-box">
+                <h3>15%</h3>
+                <p>Avg Yield Increase</p>
+            </div>
+            <div class="stat-box">
+                <h3>99.9%</h3>
+                <p>Uptime</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reviews Section -->
+<div class="reviews-section">
+    <div class="reviews-container">
+        <h2 class="section-title">What Our Farmers Say</h2>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="review-header">
+                    <div class="reviewer-avatar">JO</div>
+                    <div class="reviewer-info">
+                        <h4>John Okafor</h4>
+                        <p>Lagos, Nigeria</p>
+                    </div>
+                </div>
+                <p class="review-text">"AquaTrace helped me reduce fish mortality by 40%. The real-time alerts saved my entire tilapia stock during a temperature spike!"</p>
+            </div>
+
+            <div class="review-card">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="review-header">
+                    <div class="reviewer-avatar">AM</div>
+                    <div class="reviewer-info">
+                        <h4>Amara Mensah</h4>
+                        <p>Accra, Ghana</p>
+                    </div>
+                </div>
+                <p class="review-text">"The monthly predictions are incredibly accurate. I've increased my catfish production by 25% by following the recommendations."</p>
+            </div>
+
+            <div class="review-card">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="review-header">
+                    <div class="reviewer-avatar">CK</div>
+                    <div class="reviewer-info">
+                        <h4>Charles Kipchoge</h4>
+                        <p>Nairobi, Kenya</p>
+                    </div>
+                </div>
+                <p class="review-text">"Best investment for my aquaculture business. The multi-farm dashboard saves me hours every day. Highly recommended!"</p>
+            </div>
+
+            <div class="review-card">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="review-header">
+                    <div class="reviewer-avatar">SN</div>
+                    <div class="reviewer-info">
+                        <h4>Stella Nwosu</h4>
+                        <p>Benin City, Nigeria</p>
+                    </div>
+                </div>
+                <p class="review-text">"Customer support is amazing. They helped me set up everything in minutes. System is so intuitive and powerful!"</p>
+            </div>
+
+            <div class="review-card">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="review-header">
+                    <div class="reviewer-avatar">PM</div>
+                    <div class="reviewer-info">
+                        <h4>Peter Mwangi</h4>
+                        <p>Kampala, Uganda</p>
+                    </div>
+                </div>
+                <p class="review-text">"The SMS alerts are a lifesaver. I can monitor my pond from anywhere. Worth every penny. Thanks AquaTrace!"</p>
+            </div>
+
+            <div class="review-card">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="review-header">
+                    <div class="reviewer-avatar">UO</div>
+                    <div class="reviewer-info">
+                        <h4>Ugochukwu Obi</h4>
+                        <p>Port Harcourt, Nigeria</p>
+                    </div>
+                </div>
+                <p class="review-text">"AquaTrace's prediction engine helped me plan better. My yield improved and costs reduced. Excellent platform!"</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section">
+    <div class="cta-container">
+        <h2>Ready to Transform Your Fish Farm?</h2>
+        <p>Join hundreds of successful aquaculture farmers using AquaTrace to maximize productivity and reduce losses.</p>
+        <a href="/signup" class="btn-cta">Get Started Free Today</a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any animations or interactions here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Scroll animations for feature cards
+        const cards = document.querySelectorAll('.feature-card, .review-card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transition = 'opacity 0.6s ease-in-out';
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}

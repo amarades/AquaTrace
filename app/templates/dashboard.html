@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - {{ farm.name }} - AquaTrace{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hidden farm ID for JavaScript -->
+<input type="hidden" id="farm-id" value="{{ farm.id }}">
+
+<div class="dashboard-wrapper">
+
+  <!-- Loading Indicator -->
+  <div id="loading-indicator" class="loading-indicator" style="display: none;">
+    <i class="fas fa-spinner fa-spin"></i>
+    <span>Loading data...</span>
+  </div>
+
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <h1 class="farm-title">
+        <i class="fas fa-water"></i> {{ farm.name }}
+      </h1>
+      <p class="farm-subtitle">
+        <i class="fas fa-fish"></i> {{ farm.fish_type or 'N/A' }} 
+        <span class="separator">•</span>
+        <i class="fas fa-map-marker-alt"></i> {{ farm.location or 'Location not set' }}
+      </p>
+    </div>
+    <div class="header-controls">
+      <button class="btn btn-refresh" onclick="refreshData()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+      <a href="/download/{{ farm.id }}" class="btn btn-download">
+        <i class="fas fa-download"></i> Export CSV
+      </a>
+      <a href="/farms" class="btn btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Farms
+      </a>
+    </div>
+  </header>
+
+  <!-- Dashboard Grid -->
+  <div class="dashboard-grid">
+
+    <!-- Temperature Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fas fa-temperature-high"></i> Temperature
+        </h3>
+        <span class="parameter-badge normal" id="temp-badge">Normal</span>
+      </div>
+      <div class="card-body">
+        <div class="parameter-value" id="temperature-value">-- °C</div>
+        <div class="parameter-range">
+          Range: {{ farm.temp_min }}°C - {{ farm.temp_max }}°C
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="tempChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Oxygen Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fas fa-wind"></i> Dissolved Oxygen
+        </h3>
+        <span class="parameter-badge normal" id="oxy-badge">Normal</span>
+      </div>
+      <div class="card-body">
+        <div class="parameter-value" id="oxygen-value">-- mg/L</div>
+        <div class="parameter-range">
+          Minimum: {{ farm.oxygen_min }} mg/L
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="oxyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- pH Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fas fa-tint"></i> pH Level
+        </h3>
+        <span class="parameter-badge normal" id="ph-badge">Normal</span>
+      </div>
+      <div class="card-body">
+        <div class="parameter-value" id="ph-value">--</div>
+        <div class="parameter-range">
+          Optimal: 7.0 - 7.5
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="phChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Ammonia Card -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <i class="fas fa-flask"></i> Ammonia
+        </h3>
+        <span class="parameter-badge warning" id="ammo-badge">Caution</span>
+      </div>
+      <div class="card-body">
+        <div class="parameter-value" id="ammonia-value">-- mg/L</div>
+        <div class="parameter-range">
+          Maximum: {{ farm.ammonia_max }} mg/L
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="ammoChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Timestamp -->
+  <div class="timestamp">
+    <i class="far fa-clock"></i> Last update: <span id="last-update">--</span>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

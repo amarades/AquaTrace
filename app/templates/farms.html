@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Farms - AquaTrace{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+    .farms-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+    
+    .farms-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .farms-header h2 {
+        font-size: 2rem;
+        color: #2c3e50;
+    }
+    
+    .btn-add-farm {
+        background: linear-gradient(135deg, #1e88e5, #00bcd4);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    
+    .btn-add-farm:hover {
+        opacity: 0.9;
+    }
+    
+    .farms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .farm-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+    }
+    
+    .farm-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .farm-card h3 {
+        color: #1e88e5;
+        margin-bottom: 0.5rem;
+    }
+    
+    .farm-info {
+        font-size: 0.95rem;
+        color: #666;
+        margin: 0.5rem 0;
+    }
+    
+    .farm-thresholds {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+        font-size: 0.85rem;
+    }
+    
+    .farm-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .farm-actions a,
+    .farm-actions button {
+        flex: 1;
+        padding: 0.6rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    
+    .btn-view {
+        background: #1e88e5;
+        color: white;
+    }
+    
+    .btn-delete {
+        background: #f44336;
+        color: white;
+    }
+    
+    .btn-view:hover {
+        background: #1565c0;
+    }
+    
+    .btn-delete:hover {
+        background: #d32f2f;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: #2c3e50;
+    }
+    
+    .modal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .modal-form label {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .modal-form input,
+    .modal-form select {
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+    
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .modal-actions button {
+        flex: 1;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    .btn-save {
+        background: #4caf50;
+        color: white;
+    }
+    
+    .btn-cancel {
+        background: #999;
+        color: white;
+    }
+    
+    .btn-save:hover {
+        background: #388e3c;
+    }
+    
+    .btn-cancel:hover {
+        background: #777;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #ddd;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="farms-container">
+    <div class="farms-header">
+        <h2><i class="fas fa-barn"></i> Your Farms</h2>
+        <button class="btn-add-farm" onclick="openAddFarmModal()">
+            <i class="fas fa-plus"></i> Add Farm
+        </button>
+    </div>
+    
+    {% if farms %}
+    <div class="farms-grid">
+        {% for farm in farms %}
+        <div class="farm-card">
+            <h3><i class="fas fa-water"></i> {{ farm.name }}</h3>
+            <div class="farm-info">
+                <strong>Location:</strong> {{ farm.location or 'N/A' }}
+            </div>
+            <div class="farm-info">
+                <strong>Fish Type:</strong> {{ farm.fish_type or 'N/A' }}
+            </div>
+            <div class="farm-info">
+                <strong>Pond Size:</strong> {{ farm.pond_size or 'N/A' }} m³
+            </div>
+            <div class="farm-thresholds">
+                <strong>Alert Thresholds:</strong>
+                <div>Temp: {{ farm.temp_min }}–{{ farm.temp_max }}°C</div>
+                <div>Oxygen: &ge;{{ farm.oxygen_min }} mg/L</div>
+                <div>Ammonia: &le;{{ farm.ammonia_max }} mg/L</div>
+            </div>
+            <div class="farm-actions">
+                <a href="/dashboard/{{ farm.id }}" class="btn-view">
+                    <i class="fas fa-chart-line"></i> Monitor
+                </a>
+                <form method="POST" style="flex: 1; margin: 0;">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="farm_id" value="{{ farm.id }}">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Delete this farm?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>No farms yet. Create your first farm to start monitoring!</p>
+        <button class="btn-add-farm" onclick="openAddFarmModal()" style="margin-top: 1rem;">
+            <i class="fas fa-plus"></i> Create Farm
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Farm Modal -->
+<div id="addFarmModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">Add New Farm</div>
+        <form method="POST" class="modal-form">
+            <div>
+                <label for="farm_name">Farm Name *</label>
+                <input type="text" id="farm_name" name="name" required>
+            </div>
+            <div>
+                <label for="farm_location">Location</label>
+                <input type="text" id="farm_location" name="location" placeholder="City/Region">
+            </div>
+            <div>
+                <label for="farm_type">Fish Type *</label>
+                <select id="farm_type" name="fish_type" required>
+                    <option value="">Select fish type</option>
+                    <option value="Tilapia">Tilapia</option>
+                    <option value="Catfish">Catfish</option>
+                    <option value="Trout">Trout</option>
+                    <option value="Carp">Carp</option>
+                </select>
+            </div>
+            <div>
+                <label for="farm_size">Pond Size (m³)</label>
+                <input type="number" id="farm_size" name="pond_size" step="0.1" placeholder="e.g., 100">
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-check"></i> Create Farm
+                </button>
+                <button type="button" class="btn-cancel" onclick="closeAddFarmModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openAddFarmModal() {
+        document.getElementById('addFarmModal').classList.add('active');
+    }
+    
+    function closeAddFarmModal() {
+        document.getElementById('addFarmModal').classList.remove('active');
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('addFarmModal');
+        if (event.target == modal) {
+            modal.classList.remove('active');
+        }
+    }
+</script>
+{% endblock %}
