@@ -19,7 +19,7 @@ pyserial==3.5
 twilio==8.10.0
 
 # Data Processing (Optional - for advanced features)
-pandas==2.1.4
+pandas
 numpy==1.26.2
 
 # Plotting (Optional - for data visualization)
